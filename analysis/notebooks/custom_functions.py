@@ -86,7 +86,7 @@ def plot_volcano(res_df: pd.DataFrame = None,
                  lfc_threshold: float = 1, pvalue_threshold: float = 0.05, basemean_filter: float = 10,
                 markers: list = None, gene_labels:bool=True, dot_size:int=20,
                 palette1: list = ['red', 'green', 'blue', 'lightgrey'], palette2: list = ['purple'], title: str = '',
-                get_degs:bool=False, save:bool=True,save_format: str = 'svg'):
+                get_degs:bool=False, save:bool=True,save_dir: str = '', save_format: str = 'svg'):
     """
     Generates a volcano plot for visualizing differentially expressed genes (DEGs).
 
@@ -165,8 +165,14 @@ def plot_volcano(res_df: pd.DataFrame = None,
                     x_pos = m_df['log2FoldChange'].iloc[l]
                     y_pos = m_df['-log10P'].iloc[l]
                     label = m_df['Symbol'].iloc[l]
-                    labels.append(ax.text(x_pos, y_pos, str(label), fontsize=10, ha='center', va='bottom', color='black', 
-                                        bbox=dict(facecolor='white', alpha=0.5)))
+                    labels.append(
+                        ax.text(
+                            x_pos, y_pos, str(label),
+                            fontsize=10, ha='center', va='bottom', color='black',
+                            fontstyle='italic',
+                            bbox=dict(facecolor='white', alpha=0.5)
+                        )
+                    )
                 adjust_text(labels, arrowprops=dict(arrowstyle='-', color='gray'))
             else:
                 raise ValueError('Empty marker list provided.')
@@ -177,8 +183,14 @@ def plot_volcano(res_df: pd.DataFrame = None,
                 x_pos = m_df['log2FoldChange'].iloc[l]
                 y_pos = m_df['-log10P'].iloc[l]
                 label = m_df['Symbol'].iloc[l]
-                labels.append(ax.text(x_pos, y_pos, label, fontsize=10, ha='center', va='bottom', color='black', 
-                                    bbox=dict(facecolor='white', alpha=0.5)))
+                labels.append(
+                    ax.text(
+                        x_pos, y_pos, label,
+                        fontsize=10, ha='center', va='bottom', color='black',
+                        fontstyle='italic',
+                        bbox=dict(facecolor='white', alpha=0.5)
+                    )
+                )
             adjust_text(labels, arrowprops=dict(arrowstyle='-', color='gray'))
     
     # Overall title
@@ -186,12 +198,12 @@ def plot_volcano(res_df: pd.DataFrame = None,
     
     # Save plot
     if save:
-        os.makedirs(f'results/volcano/', exist_ok=True)
-        plt.savefig(f'results/volcano/volcano_{title}.{save_format}')
+        os.makedirs(f'{save_dir}', exist_ok=True)
+        plt.savefig(f'{save_dir}/volcano_{title}.{save_format}')
 
     if get_degs:
         degs= res[(abs(res['log2FoldChange']) > lfc_threshold) & (res['pvalue'] < pvalue_threshold)]
-        degs.to_csv(f'results/volcano/volcano_degs_{title}.csv')
+        degs.to_csv(f'{save_dir}/volcano_degs_{title}.csv')
 
     return fig, ax
 
